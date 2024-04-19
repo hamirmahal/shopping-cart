@@ -4,21 +4,21 @@
       "id": 1,
       "name": "Brownie",
       "imageURL": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHdr1eTXEMs68Dx-b_mZT0RpifEQ8so6A1unRsJlyJIPe0LUE2HQ",
-      "price": 2.00,
+      "price": 2.0,
       "bulkPricing": {
         "amount": 4,
-        "totalPrice": 7.00
+        "totalPrice": 7.0
       }
     },
-    
+
     {
       "id": 2,
       "name": "Key Lime Cheesecake",
       "imageURL": "http://1.bp.blogspot.com/-7we9Z0C_fpI/T90JXcg3YsI/AAAAAAAABn4/EN7u2vMuRug/s1600/key+lime+cheesecake+slice+in+front.jpg",
-      "price": 8.00,
+      "price": 8.0,
       "bulkPricing": null
     },
-    
+
     {
       "id": 3,
       "name": "Cookie",
@@ -26,18 +26,16 @@
       "price": 1.25,
       "bulkPricing": {
         "amount": 6,
-        "totalPrice": 6.00
+        "totalPrice": 6.0
       }
-    
     },
-    
+
     {
       "id": 4,
       "name": "Mini Gingerbread Donut",
       "imageURL": "https://i.etsystatic.com/29050134/r/il/634971/3087380231/il_794xN.3087380231_n32u.jpg",
-      "price": 0.50,
+      "price": 0.5,
       "bulkPricing": null
-      
     }
   ]
 }
