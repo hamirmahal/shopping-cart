@@ -261,42 +261,42 @@ mod tests {
     fn test_shopping_cart_total() {
         let data = vec![
             Item {
-          id: 1,
-          name: "Brownie".to_string(),
-          image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHdr1eTXEMs68Dx-b_mZT0RpifEQ8so6A1unRsJlyJIPe0LUE2HQ".to_string(),
-          price: 2.0,
-          bulk_pricing: Some(BulkPricing {
-              amount: 4,
-              total_price: 7.0,
-          }),
-          sale: None,
+              id: 1,
+              name: "Brownie".to_string(),
+              image_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHdr1eTXEMs68Dx-b_mZT0RpifEQ8so6A1unRsJlyJIPe0LUE2HQ".to_string(),
+              price: 2.0,
+              bulk_pricing: Some(BulkPricing {
+                  amount: 4,
+                  total_price: 7.0,
+              }),
+              sale: None,
             },
             Item {
-          id: 2,
-          name: "Key Lime Cheesecake".to_string(),
-          image_url: "http://1.bp.blogspot.com/-7we9Z0C_fpI/T90JXcg3YsI/AAAAAAAABn4/EN7u2vMuRug/s1600/key+lime+cheesecake+slice+in+front.jpg".to_string(),
-          price: 8.0,
-          bulk_pricing: None,
-          sale: None
+              id: 2,
+              name: "Key Lime Cheesecake".to_string(),
+              image_url: "http://1.bp.blogspot.com/-7we9Z0C_fpI/T90JXcg3YsI/AAAAAAAABn4/EN7u2vMuRug/s1600/key+lime+cheesecake+slice+in+front.jpg".to_string(),
+              price: 8.0,
+              bulk_pricing: None,
+              sale: None
             },
             Item {
-          id: 3,
-          name: "Cookie".to_string(),
-          image_url: "http://www.mayheminthekitchen.com/wp-content/uploads/2015/05/chocolate-cookie-square.jpg".to_string(),
-          price: 1.25,
-          bulk_pricing: Some(BulkPricing {
-              amount: 6,
-              total_price: 6.0,
-          }),
-          sale: None
+              id: 3,
+              name: "Cookie".to_string(),
+              image_url: "http://www.mayheminthekitchen.com/wp-content/uploads/2015/05/chocolate-cookie-square.jpg".to_string(),
+              price: 1.25,
+              bulk_pricing: Some(BulkPricing {
+                  amount: 6,
+                  total_price: 6.0,
+              }),
+              sale: None
             },
             Item {
-          id: 4,
-          name: "Mini Gingerbread Donut".to_string(),
-          image_url: "https://i.etsystatic.com/29050134/r/il/634971/3087380231/il_794xN.3087380231_n32u.jpg".to_string(),
-          price: 0.5,
-          bulk_pricing: None,
-          sale: None
+              id: 4,
+              name: "Mini Gingerbread Donut".to_string(),
+              image_url: "https://i.etsystatic.com/29050134/r/il/634971/3087380231/il_794xN.3087380231_n32u.jpg".to_string(),
+              price: 0.5,
+              bulk_pricing: None,
+              sale: None
             },
         ];
 
