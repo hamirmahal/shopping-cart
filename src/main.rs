@@ -1,20 +1,32 @@
 use chrono::{Datelike, Weekday};
+use redis::Commands;
 use serde::{Deserialize, Serialize};
 use serde_json::Result;
 
-struct ShoppingCart<'a> {
-    products: std::collections::HashMap<&'a str, usize>,
+struct ShoppingCart {
+    products: std::collections::HashMap<String, usize>,
+    redis_client: redis::Client,
 }
 
-impl<'a> ShoppingCart<'a> {
+impl ShoppingCart {
     fn new() -> Self {
+        let redis_client =
+            redis::Client::open("redis://127.0.0.1/").expect("Failed to connect to Redis");
         Self {
             products: std::collections::HashMap::new(),
+            redis_client,
         }
     }
 
-    fn add(&mut self, product: &'a str, quantity: usize) {
-        self.products.insert(product, quantity);
+    fn add(&mut self, product: &str, quantity: usize) {
+        self.products.insert(product.to_owned(), quantity);
+        let mut conn = self
+            .redis_client
+            .get_connection()
+            .expect("Failed to connect to Redis");
+        let _: () = conn
+            .hset("shopping_cart", product, quantity)
+            .expect("Failed to add item to Redis");
     }
 
     fn total(&self, items: &[Item], date: &chrono::NaiveDate) -> f64 {
@@ -67,6 +79,25 @@ impl<'a> ShoppingCart<'a> {
 
     fn clear(&mut self) {
         self.products.clear();
+        let mut conn = self
+            .redis_client
+            .get_connection()
+            .expect("Failed to connect to Redis");
+        let _: () = conn
+            .del("shopping_cart")
+            .expect("Failed to clear shopping cart in Redis");
+    }
+
+    #[allow(dead_code)]
+    fn load_from_redis(&mut self) {
+        let mut conn = self
+            .redis_client
+            .get_connection()
+            .expect("Failed to connect to Redis");
+        let shopping_cart: std::collections::HashMap<String, usize> = conn
+            .hgetall("shopping_cart")
+            .expect("Failed to load shopping_cart from Redis");
+        self.products = shopping_cart;
     }
 }
 
