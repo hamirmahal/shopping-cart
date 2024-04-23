@@ -66,7 +66,7 @@ impl ShoppingCart {
                 bulk_count as f64 * *sale_price + remainder as f64 * price
             }
             SalePrice::PercentageOff(discount) => {
-                let discounted_price = price * (1.0 - discount);
+                let discounted_price = price * (100 - discount) as f64 / 100.0;
                 discounted_price * quantity as f64
             }
             SalePrice::TwoForOne => {
@@ -129,8 +129,21 @@ struct BulkPricing {
 #[derive(Debug, Deserialize, Serialize)]
 enum SalePrice {
     QuantityForFixedPrice(u32, f64),
-    PercentageOff(f64),
+    PercentageOff(#[serde(deserialize_with = "deserialize_percentage")] u8),
     TwoForOne,
+}
+
+fn deserialize_percentage<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> std::result::Result<u8, D::Error> {
+    let percentage = u8::deserialize(deserializer).unwrap();
+    match percentage {
+        0..=100 => Ok(percentage),
+        _ => Err(serde::de::Error::invalid_value(
+            serde::de::Unexpected::Unsigned(percentage.into()),
+            &"a value between 0 and 100",
+        )),
+    }
 }
 /// Dates           | Product                       | Sale Price
 /// ----------------|-------------------------------|-----------
@@ -146,6 +159,7 @@ enum SaleDate {
 #[derive(Debug, Deserialize, Serialize)]
 struct Sale {
     date: SaleDate,
+    #[serde(rename = "salePrice")]
     sale_price: SalePrice,
 }
 
@@ -369,7 +383,7 @@ mod tests {
             bulk_pricing: None,
             sale: Some(Sale {
               date: SaleDate::MonthAndDay(10, 1),
-                sale_price: SalePrice::PercentageOff(0.25)
+                sale_price: SalePrice::PercentageOff(25)
             }),
           },
           Item {
@@ -398,5 +412,102 @@ mod tests {
             ),
             30.0
         );
+    }
+
+    #[test]
+    fn test_percentage_off() {
+        let data = vec![
+            Item {
+                id: 1,
+                name: "Apple".to_string(),
+                image_url: "".to_string(),
+                price: 8.0,
+                bulk_pricing: None,
+                sale: Some(Sale {
+                    date: SaleDate::MonthAndDay(10, 1),
+                    sale_price: SalePrice::PercentageOff(25),
+                }),
+            },
+            Item {
+                id: 2,
+                name: "Banana".to_string(),
+                image_url: "".to_string(),
+                price: 2.22,
+                bulk_pricing: None,
+                sale: Some(Sale {
+                    date: SaleDate::MonthAndDay(10, 1),
+                    sale_price: SalePrice::PercentageOff(0),
+                }),
+            },
+            Item {
+                id: 3,
+                name: "Carrot".to_string(),
+                image_url: "".to_string(),
+                price: 3.33,
+                bulk_pricing: None,
+                sale: Some(Sale {
+                    date: SaleDate::MonthAndDay(10, 1),
+                    sale_price: SalePrice::PercentageOff(100),
+                }),
+            },
+        ];
+
+        let mut cart = ShoppingCart::new();
+        cart.add("Apple", 1);
+        assert_eq!(
+            cart.total(
+                &data,
+                &chrono::NaiveDate::from_ymd_opt(2021, 10, 1).unwrap()
+            ),
+            6.0
+        );
+        cart.clear();
+
+        cart.add("Banana", 1);
+        assert_eq!(
+            cart.total(
+                &data,
+                &chrono::NaiveDate::from_ymd_opt(2021, 10, 1).unwrap()
+            ),
+            2.22
+        );
+        cart.clear();
+
+        cart.add("Carrot", 1);
+        assert_eq!(
+            cart.total(
+                &data,
+                &chrono::NaiveDate::from_ymd_opt(2021, 10, 1).unwrap()
+            ),
+            0.0
+        );
+        cart.clear();
+    }
+
+    #[test]
+    #[should_panic(expected = "invalid value: integer `101`, expected a value between 0 and 100")]
+    fn test_invalid_percentage_in_json() {
+        let json_data = r#"
+        {
+            "treats": [
+              {
+                "id": 1,
+                "name": "Apple",
+                "imageURL": "",
+                "price": 8.0,
+                "bulkPricing": null,
+                "sale": {
+                  "date": {
+                    "MonthAndDay": [10, 1]
+                  },
+                  "salePrice": {
+                    "PercentageOff": 101
+                  }
+                }
+              }
+            ]
+          }
+        "#;
+        parse(json_data).unwrap();
     }
 }
